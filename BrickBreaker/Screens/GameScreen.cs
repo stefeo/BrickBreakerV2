@@ -551,7 +551,7 @@ namespace BrickBreaker.Screens
             e.Graphics.FillRectangle(paddleBrush, paddle.x, paddle.y, paddle.width, paddle.height);
             e.Graphics.DrawRectangle(ballPen, paddle.x, paddle.y, paddle.width, paddle.height);
 
-            // Draws blocks (pnly if blindfold is not on)
+            // Draws blocks (only if blindfold is not on)
             if (isBlindfold == false)
            
             {
