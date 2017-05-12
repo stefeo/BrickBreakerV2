@@ -25,8 +25,6 @@ namespace BrickBreaker.Screens
     {
         #region global values
 
-
-
         #region Stefan and Jack's values
 
         List<PowerUp> powerUps = new List<PowerUp>();
@@ -82,7 +80,7 @@ namespace BrickBreaker.Screens
         SolidBrush ballBrush = new SolidBrush(Color.White);
         SolidBrush blockBrush = new SolidBrush(Color.Red);
 
-        Pen ballPen = new Pen(Color.Black);
+        Pen ballPen = new Pen(Color.SlateGray);
 
 
 
@@ -91,11 +89,16 @@ namespace BrickBreaker.Screens
         public GameScreen()
         {
             InitializeComponent();
-            OnStart();
+            OnStart();  
         }
 
         public void OnStart()
         {
+            //lives Images
+            Form1.heartImage1.BackgroundImage = Properties.Resources.life;
+            Form1.heartImage2.BackgroundImage = Properties.Resources.life;
+            Form1.heartImage3.BackgroundImage = Properties.Resources.life;
+
             //Resets score
             Form1.currentScore = 0;
 
@@ -135,6 +138,7 @@ namespace BrickBreaker.Screens
             balls.Add(ball);
 
             //also added by Lake
+
             loadLevel("levels\\level1.xml");
 
             gameTimer.Enabled = true;
@@ -223,7 +227,7 @@ namespace BrickBreaker.Screens
         {
             gameTimer.Enabled = false;
 
-            DialogResult result = PauseScreen.Show("Quit the Game?", "Testing", "Yes", "No");
+            DialogResult result = PauseScreen.Show("Return to the Main Menu?", "Yes", "No");
 
             switch (result)
             {
@@ -235,7 +239,13 @@ namespace BrickBreaker.Screens
                     break;
 
                 case DialogResult.Yes:
-                    Application.Exit();
+                    MenuScreen ms = new MenuScreen();
+                    Form form = this.FindForm();
+
+                    form.Controls.Add(ms);
+                    form.Controls.Remove(this);
+
+                    ms.Location = new Point((form.Width - ms.Width) / 2, (form.Height - ms.Height) / 2);
                     break;
             }
         }
@@ -258,14 +268,14 @@ namespace BrickBreaker.Screens
             //normal controls when shrooms is off
             else
             {
-                if (leftArrowDown && paddle.x > 0)
-                {
-                    paddle.Move("left");
-                }
-                if (rightArrowDown && paddle.x < (this.Width - paddle.width))
-                {
-                    paddle.Move("right");
-                }
+            if (leftArrowDown && paddle.x > 0)
+            {
+                paddle.Move("left");
+            }
+            if (rightArrowDown && paddle.x < (this.Width - paddle.width))
+            {
+                paddle.Move("right");
+            }
             }
 
             #region Stefan and Jacks PowerUps
@@ -308,9 +318,9 @@ namespace BrickBreaker.Screens
                 foreach (Ball ba in balls)
                 {
                     if (ba.PaddleCollision(floorPaddle, false, false, 100) == 0)
-                    {
-                        floorTimer = 0;
-                    }
+                {
+                    floorTimer = 0;
+                }
                 }
                 CollidePowerUps(floorPaddle);
             }
@@ -405,6 +415,7 @@ namespace BrickBreaker.Screens
                         if (blocks.Count == 0)
                         {
                             //added by Lake
+
                             #region Decide Wich Level To Load
                             totalLevels = Directory.GetFiles("levels", "*.xml", SearchOption.AllDirectories).Length;
                             currentLevel++;
@@ -415,7 +426,7 @@ namespace BrickBreaker.Screens
                             else
                             {
                                 OnEnd();
-                            }
+                             }
 
                             Thread.Sleep(1000);
 
@@ -451,10 +462,13 @@ namespace BrickBreaker.Screens
                         ba.y = (this.Height - paddle.height) - 85;
                     }
 
-
+                    //lives Images
+                    if (lives == 2) { Form1.heartImage3.BackgroundImage = Properties.Resources.lostLife; }
+                    if (lives == 1) { Form1.heartImage2.BackgroundImage = Properties.Resources.lostLife; }
 
                     if (lives == 0)
                     {
+                        Form1.heartImage1.BackgroundImage = Properties.Resources.lostLife;
                         gameTimer.Enabled = false;
 
                         OnEnd();
@@ -489,8 +503,8 @@ namespace BrickBreaker.Screens
             Color blockColour;
 
             int items = 1;
-
-            //extract info
+            //
+            //extract info  
             XmlTextReader reader = new XmlTextReader(Level);
 
             while (reader.Read())
@@ -525,7 +539,7 @@ namespace BrickBreaker.Screens
             }
             reader.Close();
         }
-
+        
         public void OnEnd()
         {
             Thread.Sleep(1000);
@@ -542,10 +556,10 @@ namespace BrickBreaker.Screens
 
         public void GameScreen_Paint(object sender, PaintEventArgs e)
         {
-            Image backImage = BrickBreaker.Properties.Resources.fadedBackground;
-            
+            Image backImage = BrickBreaker.Properties.Resources.texture4;           
             Rectangle backRect = new Rectangle((0 - 400) - paddle.x, 0, this.Width * 3, this.Height);
             e.Graphics.DrawImage(backImage, backRect);
+            
 
             // Draws paddle
             e.Graphics.FillRectangle(paddleBrush, paddle.x, paddle.y, paddle.width, paddle.height);
@@ -553,7 +567,6 @@ namespace BrickBreaker.Screens
 
             // Draws blocks (only if blindfold is not on)
             if (isBlindfold == false)
-           
             {
                 foreach (Block b in blocks)
                 {
@@ -576,7 +589,6 @@ namespace BrickBreaker.Screens
             }
             #endregion
 
-
             //drawBalls
             foreach (Ball ba1 in balls)
             {
@@ -584,7 +596,6 @@ namespace BrickBreaker.Screens
                 e.Graphics.DrawRectangle(ballPen, ba1.x, ba1.y, ba1.size, ba1.size);
                 
             }
-
         }
 
         #region Stefan and Jack's Powerup Methods
